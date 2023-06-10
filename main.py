@@ -64,7 +64,7 @@ class RequestText(BaseModel):
     text:str
  
 @app.post("/predict_review")
-def predict_text(req: RequestText, response: Response):
+async def predict_text(req: RequestText, response: Response) -> str:
     try:
         # In here you will get text sent by the user
         text = [req.text]
@@ -84,8 +84,11 @@ def predict_text(req: RequestText, response: Response):
 class RequestRating(BaseModel):
     predicted:str
     user_rating:list
-@app.post("/new_ratings")
-def predict_text(req: Request, response: Response):
+class ResponseRating(BaseModel):
+    total_rating: float
+    new_ratings: list
+@app.post("/new_ratings", response_model=ResponseRating)
+async def predict_text(req: RequestRating, response: Response) -> ResponseRating:
     try:
         existing_ratings = req.user_rating
         predicted_sentiment = req.predicted
@@ -119,7 +122,8 @@ def predict_text(req: Request, response: Response):
         # Limit the rating value between 0 and 5
         total_rating = max(0, min(5, total_rating))
 
-        return {'total_rating': total_rating, 'new_ratings': existing_ratings.append(weight_adjusted)}
+        result: ResponseRating = ResponseRating(new_ratings=existing_ratings.append(weight_adjusted), total_rating=total_rating)
+        return result
 
     except Exception as e:
         traceback.print_exc()
