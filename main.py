@@ -37,17 +37,18 @@ import os
 import uvicorn
 import traceback
 import tensorflow as tf
+import tensorflow_hub as hub
 import numpy as np
 
 from pydantic import BaseModel
 from urllib.request import Request
-from fastapi import FastAPI, Response, UploadFile
+from fastapi import FastAPI, Response
 # Initialize Model
 # If you already put yout model in the same folder as this main.py
 # You can load .h5 model or any model below this line
 
 # If you use h5 type uncomment line below
-model = tf.keras.models.load_model('./nlp_model.h5')
+model = tf.keras.models.load_model('./nlp_model.h5', custom_objects={'KerasLayer':hub.KerasLayer})
 # If you use saved model type uncomment line below
 # model = tf.saved_model.load("./my_model_folder")
 
@@ -66,16 +67,15 @@ class RequestText(BaseModel):
 def predict_text(req: RequestText, response: Response):
     try:
         # In here you will get text sent by the user
-        text = req.text
+        text = [req.text]
         print("Uploaded text:", text)
         
         # Predict the text
-        result = model.predict(text)
-
         labels = ['Positive', 'Neutral', "Negative"] 
-        label = labels[np.argmax(np.around(result))]
-        
-        return label
+        prediction = model.predict(text)
+        sentiment = labels[prediction.argmax(axis=1)[0]]
+
+        return sentiment
     except Exception as e:
         traceback.print_exc()
         response.status_code = 500
@@ -119,7 +119,7 @@ def predict_text(req: Request, response: Response):
         # Limit the rating value between 0 and 5
         total_rating = max(0, min(5, total_rating))
 
-        return {'total_rating': total_rating, 'new_ratings': existing_ratings.append(weight)}
+        return {'total_rating': total_rating, 'new_ratings': existing_ratings.append(weight_adjusted)}
 
     except Exception as e:
         traceback.print_exc()
