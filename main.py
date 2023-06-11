@@ -63,7 +63,7 @@ def index():
 class RequestText(BaseModel):
     text:str
  
-@app.post("/predict_review")
+@app.post("/predict_review", description="Predict sentiment analysis based on the given text")
 async def predict_text(req: RequestText, response: Response) -> str:
     try:
         # In here you will get text sent by the user
@@ -87,7 +87,7 @@ class RequestRating(BaseModel):
 class ResponseRating(BaseModel):
     total_rating: float
     new_ratings: list
-@app.post("/new_ratings", response_model=ResponseRating)
+@app.post("/new_ratings", response_model=ResponseRating, description="New rating for user, based on list of user_rating and a sentiment analysis result")
 async def predict_text(req: RequestRating, response: Response) -> ResponseRating:
     try:
         existing_ratings = req.user_rating
