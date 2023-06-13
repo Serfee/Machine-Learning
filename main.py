@@ -33,8 +33,8 @@
 
 ## Start your code here! ##
 
-import os
-import uvicorn
+# import os
+# import uvicorn
 import traceback
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -48,7 +48,8 @@ from fastapi import FastAPI, Response
 # You can load .h5 model or any model below this line
 
 # If you use h5 type uncomment line below
-model = tf.keras.models.load_model('./nlp_model.h5', custom_objects={'KerasLayer':hub.KerasLayer})
+model_uri = "gs://nlp_model_serfee/nlp_model.h5"
+model = tf.keras.models.load_model(model_uri, custom_objects={'KerasLayer':hub.KerasLayer})
 # If you use saved model type uncomment line below
 # model = tf.saved_model.load("./my_model_folder")
 
@@ -132,8 +133,8 @@ async def predict_text(req: RequestRating, response: Response) -> ResponseRating
 
 
 
-# Starting the server
-# Your can check the API documentation easily using /docs after the server is running
-port = os.environ.get("PORT", 8080)
-print(f"Listening to http://0.0.0.0:{port}")
-uvicorn.run(app, host='0.0.0.0',port=port)
+# # Starting the server
+# # Your can check the API documentation easily using /docs after the server is running
+# port = os.environ.get("PORT", 8080)
+# print(f"Listening to http://0.0.0.0:{port}")
+# uvicorn.run(app, host='0.0.0.0',port=port)
