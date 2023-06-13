@@ -1,72 +1,76 @@
-# Machine Learning FastAPI - README.md
+# Deploying Machine Learning FastAPI on Google Cloud Run - README.md
 
-This repository contains a Machine Learning FastAPI project that implements sentiment analysis and rating prediction based on user input. The project provides an API with two endpoints: `/predict_review` for sentiment analysis and `/new_ratings` for predicting new ratings based on sentiment analysis results.
+This guide will walk you through the process of deploying the Machine Learning FastAPI project on Google Cloud Run. It assumes that you have already built a Docker image for the project and have the necessary credentials and permissions to deploy on Google Cloud.
 
 ## Prerequisites
 
-Before running the project, make sure you have the following:
+Before deploying the project, make sure you have the following:
 
-- Python 3.x installed
-- Required dependencies installed. You can install them by running the following command:
-  ```
-  pip install -r requirements.txt
-  ```
+- Docker installed on your local machine
+- A Google Cloud account with the necessary credentials and permissions
+- The project's Docker image built and tagged locally
 
-## Usage
+## Deployment Steps
 
-To start the server and use the API, follow these steps:
+Follow the steps below to deploy the Machine Learning FastAPI project on Google Cloud Run.
 
-1. Ensure all the prerequisites are met.
-2. Open a terminal or command prompt in the project directory.
-3. Run the following command to start the server:
-   ```
-   python main.py 
-   ```
-   The server will start running at `http://localhost:8080`.
+### 1. Build the Docker Image
 
-## API Endpoints
+First, build the Docker image for the project using the provided Dockerfile. Open a terminal or command prompt in the project directory and run the following command:
 
-### Health Check Endpoint
+```shell
+docker build -t nlp-fastapi:latest .
+```
 
-- **Endpoint:** `/`
-- **Method:** GET
-- **Description:** A test endpoint to check if the server is running.
-- **Response:** Returns a simple "Hello world from ML endpoint!" message.
+### 2. Tag the Docker Image
 
-### Sentiment Analysis Endpoint
+Next, tag the Docker image with the appropriate repository information. Run the following command to tag the image:
 
-- **Endpoint:** `/predict_review`
-- **Method:** POST
-- **Description:** Predicts sentiment analysis based on the given text.
-- **Request Body:**
-  - `text` (str): The text to analyze.
-- **Response:** Returns the predicted sentiment as a string. Possible values are "Positive", "Neutral", or "Negative". If an error occurs during prediction, it returns an "Internal Server Error" message.
+```shell
+docker tag nlp-fastapi asia-southeast2-docker.pkg.dev/serfee-project/nlp-images/nlp-fastapi
+```
 
-### Rating Prediction Endpoint
+Replace `asia-southeast2-docker.pkg.dev/serfee-project/nlp-images/nlp-fastapi` with your desired image repository location.
 
-- **Endpoint:** `/new_ratings`
-- **Method:** POST
-- **Description:** Predicts new ratings for a user based on a list of user ratings and a sentiment analysis result.
-- **Request Body:**
-  - `predicted` (str): The sentiment analysis result (e.g., "Positive", "Neutral", "Negative").
-  - `user_rating` (list): A list of user ratings.
-- **Response:**
-  - `total_rating` (float): The updated overall rating.
-  - `new_ratings` (list): The list of user ratings with the new rating appended.
-- **Response Model:** `ResponseRating`
-- **Response Model Fields:**
-  - `total_rating` (float): The updated overall rating.
-  - `new_ratings` (list): The list of user ratings with the new rating appended.
+### 3. Push the Docker Image
+
+Push the Docker image to the configured container registry using the following command:
+
+```shell
+docker push asia-southeast2-docker.pkg.dev/serfee-project/nlp-images/nlp-fastapi
+```
+
+Replace `asia-southeast2-docker.pkg.dev/serfee-project/nlp-images/nlp-fastapi` with your image repository location.
+
+### 4. Deploy on Google Cloud Run
+
+Now, deploy the Docker image on Google Cloud Run. Run the following command:
+
+```shell
+gcloud run deploy default-service \
+    --image asia-southeast2-docker.pkg.dev/serfee-project/nlp-images/nlp-fastapi \
+    --region asia-southeast2 \
+    --platform managed \
+    --allow-unauthenticated \
+    --port 80 \
+    --memory 4Gi
+```
+
+Make sure to replace `asia-southeast2-docker.pkg.dev/serfee-project/nlp-images/nlp-fastapi` with your image repository location and configure the deployment options (region, platform, authentication, port, memory) as per your requirements.
+
+### 5. Access the Deployed Application
+
+After the deployment is successful, you can access the deployed application using the provided URL. You should see the API documentation and be able to make requests to the API.
 
 ## Additional Notes
 
-- If this is your first time running the project, make sure to install the required dependencies by running `pip install -r requirements.txt`.
-- You can access the API documentation easily by visiting `http://localhost:8080/docs` in your browser after starting the server.
-- The model used for sentiment analysis can be either an h5 model (`nlp_model.h5`) or a saved model (`my_model_folder`). Make sure to uncomment the appropriate line in `main.py` based on the model type you are using.
+- Ensure that you have the necessary permissions and credentials to deploy on Google Cloud Run.
+- Modify the deployment command and options as per your specific requirements.
+- You may need to authenticate and configure your gcloud CLI with your Google Cloud account before deploying.
 
 ## Contributing
 
-Contributions are welcome! If you find any issues or want to add new features, feel free to open an issue or submit a pull request.
+Contributions are welcome! If you find any issues or want to add new features to this deployment guide, feel free to open an issue or submit a pull request.
 
 ## License
 
