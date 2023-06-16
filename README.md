@@ -1,6 +1,34 @@
-# Machine Learning FastAPI⚡ - README.md
+# Machine Learning - README.md
 
 This repository contains a Machine Learning FastAPI project that implements sentiment analysis and rating prediction based on user input. The project provides an API with two endpoints: `/predict_review` for sentiment analysis and `/new_ratings` for predicting new ratings based on sentiment analysis results.
+
+## Model Documentation 📄
+
+Tensorflow model with NNLM-ID-128 is a tensorflow model that has been built by leveraging pre-trained word embeddings from the NNLM-ID-128 model. This approach allows the model to benefit from the knowledge and representations learned from a large corpus of text data. The additional layers and pruning techniques have been applied to further refine and optimize the model's performance. The output layer uses softmax activation to produce probability distributions over the target classes. The model has been trained using the Adam optimizer.
+
+### Training Validation Accuracy and Loss 🎯
+
+<div style="height:300px; text-align:center">
+  <img src="images/train_val_accuracy.png"/>
+  <img src="images/train_val_accuracy.png"/>
+</div>
+The training and validation accuracy and loss metrics provide insights into the performance of the model during the training process.
+
+### Test Accuracy 🎯
+
+<div style="height:auto; text-align:center">
+  <img src="images/test_accuracy.png"/>
+</div>
+
+The test accuracy reflects the performance of the model on an independent test dataset. This dataset is kept separate from both the training and validation datasets and serves as a final evaluation of the model's performance. The test accuracy provides an unbiased estimate of how well the model can perform on new, unseen data.
+
+### Confusion Matrix 🤔
+
+The confusion matrix is a visualization that shows the performance of a classification model across different classes or categories. It provides insights into the model's ability to correctly predict each class and identify potential areas of confusion. The matrix displays the true positive (TP), true negative (TN), false positive (FP), and false negative (FN) values for each class.
+
+<div style="height:200px; text-align:center">
+  <img src="images/confusion_matrix.png"/>
+</div>
 
 ## Prerequisites📝
 
